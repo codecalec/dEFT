@@ -65,28 +65,21 @@ if len(sys.argv) <= 2:
     nTotal = config.n_total
     p0 = [np.zeros(ndim) + 1e-4 * np.random.randn(ndim) for i in range(nWalkers)]
 
-    """
-    multiprocessing is broken in python > 3.6, needs investiagtion, reverting to serial for now
-    with MPIPool() as pool:
-    with Pool(processes=4) as pool:
     with Pool() as pool:
-        if not pool.is_master():
-            pool.wait()
-            sys.exit(0)
-    sampler = emcee.EnsembleSampler(nWalkers, ndim, lnprob,  pool=pool, args=[config.params["config"]["data"]["central_values"], config.icov])
-    """
-    sampler = emcee.EnsembleSampler(
-        nWalkers,
-        ndim,
-        lnprob,
-        args=[config.params["config"]["data"]["central_values"], config.icov],
-    )
-    pos, prob, state = sampler.run_mcmc(p0, nBurnIn, progress=True)
-    sampler.reset()
-    sampler.run_mcmc(pos, nTotal, progress=True)
-    samples = sampler.chain.reshape((-1, ndim))
+        sampler = emcee.EnsembleSampler(
+            nWalkers,
+            ndim,
+            lnprob,
+            pool=pool,
+            args=[config.params["config"]["data"]["central_values"], config.icov],
+        )
+        # sampler = emcee.EnsembleSampler(nWalkers, ndim, lnprob, args=[config.params["config"]["data"]["central_values"], config.icov])
+        pos, prob, state = sampler.run_mcmc(p0, nBurnIn, progress=True)
+        sampler.reset()
+        sampler.run_mcmc(pos, nTotal, progress=True)
+        samples = sampler.chain.reshape((-1, ndim))
 
-    sp = summaryPlotter()
-    sp.summarise(config, pb, sampler, samples)
-    end = time.time()
-    print("Total elapsed wall time  = " + str(int(end - start)) + " seconds")
+        sp = summaryPlotter()
+        sp.summarise(config, pb, sampler, samples)
+end = time.time()
+print("Total elapsed wall time  = " + str(int(end - start)) + " seconds")
