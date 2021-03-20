@@ -56,11 +56,39 @@ is fitted, the full covariance matrix is highly desirable.
  files containing the predictions may be provided.
 
 3. The fit parameters
-   - The user must specify some extra parameters to control the fit proceedure. Some examples are the limits of the fit for each coefficient, the maximum number of evaluation of the likelihood function and the highest-order terms to be included in
-the predictions.
+   - The user must specify some extra parameters to control the fit proceedure. Some examples are the limits of the fit for each coefficient, the maximum number of evaluation of the likelihood function and the highest-order terms to be included in the predictions.
 
 These three inputs are encapsulated in a single JSON file which entirely
 defines a given dEFT analysis.
+
+### JSON Specification
+#### Data
+| Item | Type | Description |
+|-|-|-|
+| `input` | String |  |
+| `sample` | Array(Array(float)) |  |
+| `predictions` | Array(Array(float)) |  |
+| `inclusive_k_factor` | float |  |
+| `prior_limits` | dict(String, Array(float)) |  |
+| `max_coeff_power` | int |  |
+| `c_i_benchmark` | int |  |
+| `cross_terms` | bool |  |
+
+#### Model
+| Item | Type | Description |
+|-|-|-|
+| `observable` | String | Label for the observable of the analysis |
+| `bins` | Array(float) | Defines the edges of the histogram bins including the end point |
+| `central_values` | Array(float)  | Central values of histogram bins |
+| `covariance_matrix` | Array(Array(float)) | Co-variance matrix of the bins |
+
+#### Fit
+| Item | Type | Description |
+|-|-|-|
+| `n_burnin` | int | Parameter for emcee |
+| `n_total` | int | Parameter for emcee |
+| `n_walkers` | int | Parameter for emcee |
+
 
 Once the JSON file has been defined, dEFT can be run with:
 
