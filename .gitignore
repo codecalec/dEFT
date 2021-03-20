@@ -17,10 +17,8 @@ analyses/CMS-TOP-18-006.json
 # root files for inputs (possibly with unpublished data)
 root_inputs/*
 
-# other outputs
-*.txt
-
 # emacs auto-backups
 *~
 
 poetry.lock
+results/*
