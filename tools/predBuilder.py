@@ -36,8 +36,7 @@ class predBuilder:
         return X
 
     def initRM(self, nOps, samples, preds):
-
-        if len(preds) <= self.nSamples(nOps):
+        if len(preds) < self.nSamples(nOps):
             raise TypeError(
                 "morphing with "
                 + str(nOps)
