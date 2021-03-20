@@ -6,6 +6,7 @@ import numpy as np
 import corner
 import os
 import json
+from pathlib import Path
 
 from matplotlib import rc
 
@@ -17,13 +18,14 @@ class summaryPlotter:
     def summarise(self, config, pb, sampler, samples):
 
         # make directory to hold results of this run
-        cmd = "mkdir -p " + str(config.params["config"]["run_name"]) + "_results"
-        os.system(cmd)
+        run_name = config.params["config"]["run_name"]
+        results_path = Path("results") / run_name
+        results_path.mkdir(parents=True, exist_ok=True)
 
         mcmc_params = np.mean(sampler.flatchain, axis=0)
         mcmc_params_cov = np.cov(np.transpose(sampler.flatchain))
 
-        data_label = "Data" + " (" + config.run_name + ")"
+        data_label = f"Data ({run_name})"
         max_val = (1.5) * (max(config.params["config"]["data"]["central_values"]))
         min_val = (0.0) * (min(config.params["config"]["data"]["central_values"]))
         xlabel = config.observable
@@ -81,13 +83,7 @@ class summaryPlotter:
         ax.xaxis.set_label_coords(0.85, -0.065)
         ax.yaxis.set_label_coords(-0.037, 0.83)
         pl.legend(loc=2)
-        pl.savefig(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_bestfit"
-            + "_predictions.png"
-        )
+        pl.savefig(results_path / f"{run_name}_bestfit_predictions.png")
         pl.close()
 
         #  make "corner" plot
@@ -110,12 +106,7 @@ class summaryPlotter:
             title_kwargs={"fontsize": 18},
         )
 
-        plotfilename = (
-            str(config.params["config"]["run_name"])
-            + "_results/"
-            + str(config.params["config"]["run_name"])
-            + ".png"
-        )
+        plotfilename = results_path / f"{run_name}.png"
         logo = image.imread("logo/dEFT_logo.png")
 
         ax0 = fig.add_subplot(999)
@@ -156,12 +147,7 @@ class summaryPlotter:
         ax.yaxis.set_label_coords(-0.075, 0.83)
         labely = ax.set_ylabel(r"$c_{i}$ [$GeV^{-2}$]", fontsize=18)
         pl.legend(loc=1, fontsize=14)
-        pl.savefig(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_bestFits.png"
-        )
+        pl.savefig(results_path / f"{run_name}_bestFits.png")
         pl.close()
 
         ############################################
@@ -182,12 +168,7 @@ class summaryPlotter:
             hist2d_kwargs={"fill_contours": True, "plot_density": True},
         )
 
-        resplot = image.imread(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_bestFits.png"
-        )
+        resplot = image.imread(results_path / f"{run_name}_bestFits.png")
 
         ax0 = fig_overlay.add_subplot(322)
         ax0.axis("off")
@@ -198,12 +179,7 @@ class summaryPlotter:
         ax0.axis("off")
         img = ax0.imshow(logo)
 
-        plotfilename = str(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_overlay.png"
-        )
+        plotfilename = results_path / f"{run_name}_overlay.png"
 
         fig_overlay.savefig(plotfilename)
         pl.close()
@@ -244,13 +220,7 @@ class summaryPlotter:
         ax.xaxis.set_label_coords(0.85, -0.065)
         ax.yaxis.set_label_coords(-0.037, 0.83)
         pl.legend(loc=1)
-        pl.savefig(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_bestfit"
-            + "_predictions.png"
-        )
+        pl.savefig(results_path / f"{run_name}_bestfit_predictions.png")
         pl.close()
 
         # make fit summary json
@@ -262,7 +232,7 @@ class summaryPlotter:
         fitSummary["labels"] = labels
         fitSummary["x"] = x
 
-        with open(config.params["config"]["run_name"] + ".json", "w") as fs:
+        with open(run_name + ".json", "w") as fs:
             json.dump(fitSummary, fs)
 
         pl.figure()
@@ -298,13 +268,7 @@ class summaryPlotter:
         ax.xaxis.set_label_coords(0.85, -0.065)
         ax.yaxis.set_label_coords(-0.037, 0.83)
         pl.legend(loc=1)
-        pl.savefig(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_postFit"
-            + "_predictions.png"
-        )
+        pl.savefig(results_path / f"{run_name}_postfit_predictions.png")
         pl.close()
 
         pl.figure()
@@ -319,12 +283,7 @@ class summaryPlotter:
 
         axes[-1].set_xlabel("step number")
 
-        pl.savefig(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_walkerPaths.png"
-        )
+        pl.savefig(results_path / f"{run_name}_walkersPaths.png")
         pl.close()
 
         # covariance matrix of coefficicents
@@ -349,22 +308,11 @@ class summaryPlotter:
 
         # ax.set_yticklabels(ticks_loc)
 
-        pl.savefig(
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "mcmc_params_cov.png"
-        )
+        pl.savefig(results_path / f"{run_name}_mcmc_params_cov.png")
         pl.close()
 
         # Write SM pred to text file for validation
-        sm_file_name = (
-            config.params["config"]["run_name"]
-            + "_results/"
-            + config.params["config"]["run_name"]
-            + "_postFit"
-            + "_sm_pred.txt"
-        )
+        sm_file_name = results_path / f"{run_name}_postFit_sm_pred.txt"
         f = open(sm_file_name, "w")
         sm_pred = str(
             repr(
