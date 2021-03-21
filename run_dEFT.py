@@ -1,15 +1,17 @@
-from tools.predBuilder import predBuilder
-from tools.summaryPlotter import summaryPlotter
-from tools.modelValidator import modelValidator
-
-import numpy as np
-import emcee
 import time
 import json
 import sys
-from tools.configReader import configReader
 from multiprocessing import Pool
+
+import emcee
+import numpy as np
 import matplotlib.pyplot as pl
+
+from tools.configReader import configReader
+from tools.PredictionBuilder import PredictionBuilder
+from tools.summaryPlotter import summaryPlotter
+from tools.modelValidator import modelValidator
+
 
 start = time.time()
 
@@ -19,10 +21,10 @@ start = time.time()
 filename = sys.argv[1]
 config = configReader()
 config.init(filename)
-pb = predBuilder()
 
-if config.params["config"]["model"]["input"] == "numpy":
-    pb.initRM(len(config.prior_limits), config.samples, config.predictions)
+# if config.params["config"]["model"]["input"] == "numpy":
+    
+pb = PredictionBuilder(len(config.prior_limits), config.samples, config.predictions)
 
 ##########################################################
 ########  VALIDATE OF MORPHING MODEL (OPTIONAL)  #########
