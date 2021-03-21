@@ -7,7 +7,7 @@ import emcee
 import numpy as np
 import matplotlib.pyplot as pl
 
-from tools.configReader import configReader
+from tools.ConfigReader import ConfigReader
 from tools.PredictionBuilder import PredictionBuilder
 from tools.summaryPlotter import summaryPlotter
 from tools.modelValidator import modelValidator
@@ -19,8 +19,7 @@ start = time.time()
 ####### READ CONFIG, BUILD MORPHING MODEL #########
 ###################################################
 filename = sys.argv[1]
-config = configReader()
-config.init(filename)
+config = ConfigReader(filename)
 
 # if config.params["config"]["model"]["input"] == "numpy":
     
@@ -32,8 +31,7 @@ pb = PredictionBuilder(len(config.prior_limits), config.samples, config.predicti
 
 if len(sys.argv) > 2:
     filenameTest = sys.argv[2]
-    configTest = configReader()
-    configTest.init(filenameTest)
+    configTest = ConfigReader(filenameTest)
 
     mv = modelValidator()
     mv.validate(configTest, pb)

@@ -4,8 +4,8 @@ import numpy as np
 from numpy.linalg import inv
 
 
-class configReader:
-    def init(self, filename):
+class ConfigReader:
+    def __init__(self, filename: str):
         self.filename = filename
         coefficients = []
         predictions = {}
