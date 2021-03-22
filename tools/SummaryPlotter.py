@@ -14,8 +14,8 @@ rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]})
 rc("text")
 
 
-class summaryPlotter:
-    def summarise(self, config, pb, sampler, samples):
+class SummaryPlotter:
+    def __init__(self, config, pb, sampler, samples):
 
         # make directory to hold results of this run
         run_name = config.params["config"]["run_name"]
