@@ -37,6 +37,12 @@ class MCMCFitter:
                         pb,
                     ],
                 )
+                # Run burn in runs
+                pos, prob, state = sampler.run_mcmc(p0, n_burnin, progress=True)
+                sampler.reset()
+
+                # Perform proper run
+                sampler.run_mcmc(pos, n_total, progress=True)
         else:
             sampler = emcee.EnsembleSampler(
                 n_walkers,
@@ -49,13 +55,12 @@ class MCMCFitter:
                     pb,
                 ],
             )
+            # Run burn in runs
+            pos, prob, state = sampler.run_mcmc(p0, n_burnin, progress=True)
+            sampler.reset()
 
-        # Run burn in runs
-        pos, prob, state = sampler.run_mcmc(p0, n_burnin, progress=True)
-        sampler.reset()
-
-        # Perform proper run
-        sampler.run_mcmc(pos, n_total, progress=True)
+            # Perform proper run
+            sampler.run_mcmc(pos, n_total, progress=True)
 
         self.sampler = sampler
 
