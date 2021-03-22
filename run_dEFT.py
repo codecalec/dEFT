@@ -10,7 +10,7 @@ import matplotlib.pyplot as pl
 from tools.ConfigReader import ConfigReader
 from tools.PredictionBuilder import PredictionBuilder
 from tools.ModelValidator import ModelValidator
-from tools.summaryPlotter import summaryPlotter
+from tools.SummaryPlotter import SummaryPlotter
 
 start = time.time()
 
@@ -49,8 +49,8 @@ def lnprior(c):
     return lnp
 
 
-def lnprob(c, data, icov):
-    pred = pb.makeRMPred(c)
+def lnprob(c: np.ndarray, data: np.ndarray, icov: np.ndarray):
+    pred = pb.make_prediction(c)
     diff = pred - data
     ll = (-np.dot(diff, np.dot(icov, diff))) + (lnprior(c))
     return ll
@@ -58,7 +58,7 @@ def lnprob(c, data, icov):
 
 if len(sys.argv) <= 2:
     nWalkers = config.n_walkers
-    ndim = int(len(config.params["config"]["model"]["prior_limits"]))
+    ndim = int(len(config.prior_limits))
     nBurnIn = config.n_burnin
     nTotal = config.n_total
     p0 = [np.zeros(ndim) + 1e-4 * np.random.randn(ndim) for i in range(nWalkers)]
@@ -72,12 +72,16 @@ if len(sys.argv) <= 2:
             args=[config.params["config"]["data"]["central_values"], config.icov],
         )
         # sampler = emcee.EnsembleSampler(nWalkers, ndim, lnprob, args=[config.params["config"]["data"]["central_values"], config.icov])
+
+        # Run burn in runs
         pos, prob, state = sampler.run_mcmc(p0, nBurnIn, progress=True)
         sampler.reset()
+
+        # Perform proper run
         sampler.run_mcmc(pos, nTotal, progress=True)
         samples = sampler.chain.reshape((-1, ndim))
 
-        sp = summaryPlotter()
-        sp.summarise(config, pb, sampler, samples)
+        SummaryPlotter(config, pb, sampler, samples)
+
 end = time.time()
 print("Total elapsed wall time  = " + str(int(end - start)) + " seconds")
