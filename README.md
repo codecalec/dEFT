@@ -1,6 +1,8 @@
 # dEFT - differential Effective Field Theory tool
 
-![dEFT logo](./logo/dEFT_logo.png)
+<p align="center">
+	<img width="200" alt="dEFT" logo src="./logo/dEFT_logo.png">
+</p>
 
 dEFT is a tool for performing fits of EFT coefficients to HEP data in seconds. 
 
@@ -23,22 +25,29 @@ dEFT is run as a python application and has been tested with python 3.X.
 dEFT requires a number of packages to be installed that can be easily
 obtained with the following pip commands:
  
-pip install matplotlib
+## Dependencies
+* matplotlib - Used for plotting. 
 
-- Used for plotting. 
+* NumPy - used for intermediate storage of data and predictions and numerical manipulations crucial to the fits. 
 
-pip install numpy
+* emcee - implements the Metrolpolis-Hastings method to estimate the N-dimensional likelihood function and hence derive the confidence/credible intervals on the EFT coefficients. More information on this package can be found here: http://dfm.io/emcee/current/.
 
-- used for intermediate storage of data and predictions and numerical manipulations
-  crucial to the fits. 
+* corner - used to generate the array of 1- and 2-d scatter plots that visualise the confidence/credible intervals. More information on this package can be found at https://corner.readthedocs.io/en/latest/install.html.
 
-pip install emcee - implements the Metrolpolis-Hastings method to estimate the N-dimensional likelihood function and hence derive the confidence/credible intervals on the EFT coefficients. More information on this package can be found here: http://dfm.io/emcee/current/.
+* tqdm - used to display progress bars while sampling is running
 
-pip install corner - used to generate the array of 1- and 2-d scatter plots that visualise the confidence/credible intervals. More information on this package can be found at https://corner.readthedocs.io/en/latest/install.html.
 
-pip install tqdm - used to display progress bars while sampling is running
+Install all dependencies using [poetry](https://python-poetry.org/) with:
+```sh
+poetry install 
+```
+or by using the `requirements.txt` file:
 
-# Building a dEFT analysis:
+```sh
+pip install -r requirements
+```
+
+# Building a dEFT analysis
 
 A dEFT analysis has three basic inputs:
 
