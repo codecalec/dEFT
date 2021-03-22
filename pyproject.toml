@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "deft"
+name = "dEFT"
 version = "0.1.0"
 description = "dEFT is a tool for performing fits of EFT coefficients to HEP data in seconds"
 authors = [

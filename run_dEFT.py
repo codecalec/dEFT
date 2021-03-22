@@ -7,10 +7,7 @@ import emcee
 import numpy as np
 import matplotlib.pyplot as pl
 
-from tools.ConfigReader import ConfigReader
-from tools.PredictionBuilder import PredictionBuilder
-from tools.ModelValidator import ModelValidator
-from tools.SummaryPlotter import SummaryPlotter
+from dEFT import ConfigReader, PredictionBuilder, ModelValidator, SummaryPlotter
 
 start = time.time()
 
