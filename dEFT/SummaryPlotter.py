@@ -3,20 +3,26 @@ import matplotlib.image as image
 import matplotlib.ticker as mticker
 
 import numpy as np
-import corner
 import os
 import json
 from pathlib import Path
 
+import numpy as np
+import emcee
+import corner
 from matplotlib import rc
 
 rc("font", **{"family": "sans-serif", "sans-serif": ["Helvetica"]})
 rc("text")
 
+from .ConfigReader import ConfigReader
+from .PredictionBuilder import PredictionBuilder
 
 class SummaryPlotter:
-    def __init__(self, config, pb, sampler, samples):
+    def __init__(self, config: ConfigReader, pb: PredictionBuilder, sampler: emcee.EnsembleSampler):
 
+        samples = sampler.chain.reshape(-1, len(config.prior_limits))
+        
         # make directory to hold results of this run
         run_name = config.params["config"]["run_name"]
         results_path = Path("results") / run_name
@@ -55,7 +61,7 @@ class SummaryPlotter:
 
         pl.errorbar(
             config.x_vals,
-            pb.makeRMPred(mcmc_params),
+            pb.make_prediction(mcmc_params),
             fmt="m",
             xerr=0.0,
             yerr=0.0,
@@ -190,7 +196,7 @@ class SummaryPlotter:
 
         pl.errorbar(
             config.x_vals,
-            pb.makeRMPred(bestFits),
+            pb.make_prediction(bestFits),
             fmt="m",
             xerr=0.0,
             yerr=0.0,
@@ -252,11 +258,11 @@ class SummaryPlotter:
         inds = np.random.randint(len(samples), size=499)
         for ind in inds:
             sample = samples[ind]
-            pl.plot(config.x_vals, pb.makeRMPred(sample), "C1", alpha=0.02)
+            pl.plot(config.x_vals, pb.make_prediction(sample), "C1", alpha=0.02)
 
         pl.plot(
             config.x_vals,
-            pb.makeRMPred(samples[42]),
+            pb.make_prediction(samples[42]),
             "C1",
             label="500 random samples",
             alpha=0.1,
@@ -316,7 +322,7 @@ class SummaryPlotter:
         f = open(sm_file_name, "w")
         sm_pred = str(
             repr(
-                pb.makeRMPred(
+                pb.make_prediction(
                     np.zeros(len(config.params["config"]["model"]["prior_limits"]))
                 )
             )
