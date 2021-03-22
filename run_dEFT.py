@@ -9,9 +9,8 @@ import matplotlib.pyplot as pl
 
 from tools.ConfigReader import ConfigReader
 from tools.PredictionBuilder import PredictionBuilder
+from tools.ModelValidator import ModelValidator
 from tools.summaryPlotter import summaryPlotter
-from tools.modelValidator import modelValidator
-
 
 start = time.time()
 
@@ -22,7 +21,7 @@ filename = sys.argv[1]
 config = ConfigReader(filename)
 
 # if config.params["config"]["model"]["input"] == "numpy":
-    
+
 pb = PredictionBuilder(len(config.prior_limits), config.samples, config.predictions)
 
 ##########################################################
@@ -30,11 +29,10 @@ pb = PredictionBuilder(len(config.prior_limits), config.samples, config.predicti
 ##########################################################
 
 if len(sys.argv) > 2:
-    filenameTest = sys.argv[2]
-    configTest = ConfigReader(filenameTest)
+    filename_test = sys.argv[2]
+    config_test = ConfigReader(filename_test)
 
-    mv = modelValidator()
-    mv.validate(configTest, pb)
+    ModelValidator(config_test, pb)
 
 #######################################
 ######### ESTIMATE POSTERIOR ##########

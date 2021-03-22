@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as pl
 
 
-class modelValidator:
-    def validate(self, configTest, pb):
+class ModelValidator:
+    def __init__(self, configTest, pb):
 
         testSamples = configTest.params["config"]["model"]["samples"]
         testPreds = np.asarray(configTest.params["config"]["model"]["predictions"])
