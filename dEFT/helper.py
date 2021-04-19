@@ -1,6 +1,6 @@
-import re
-from pathlib import Path
-import numpy as np
+import re as _re
+from pathlib import Path as _Path
+import numpy as _np
 
 # nBins = 5
 # nOps = 6
@@ -10,27 +10,34 @@ import numpy as np
 # procFileStem = "TWZ_6ops_train_"
 
 
-def convert_hwu_to_numpy(filename: Path) -> np.ndrray:
+def convert_hwu_to_numpy(filename: _Path, num_of_hist: int = 1) -> (_np.ndarray, _np.ndarray):
     '''
     Convert a HwU (histogram with uncertainties) file from MadGraph into a JSON file which is compatible with dEFT.
-    Only parses the first histogram in the file.
+    Only parses the first histogram in the file by default.
     '''
     with open(filename, 'r') as hwu_f:
-        line = next(hwu_f)
-        while (match := re.search(r"<histogram> (\d+) ", line)) is None:
+        bin_bounds = _np.empty(0)
+        central_values = _np.empty(0)
+        for i in range(num_of_hist):
             line = next(hwu_f)
-            if line is None:
-                raise RuntimeError(f"No histogram found in HwU file: {filename}")
-        bins = int(match.group(1))
-        print(bins)
+            while (match := _re.search(r"<histogram> (\d+) ", line)) is None:
+                line = next(hwu_f)
+                if line is None:
+                    raise RuntimeError(f"No histogram found in HwU file: {filename}")
+            bins = int(match.group(1))
 
-        line = next(hwu_f)
-        central_values = np.empty(bins)
-        for i in range(bins):
-            # The 2-index in HwU are central value of bin
-            central_values[i] = float(line.strip().split()[2])
             line = next(hwu_f)
-    return central_values
+            for i in range(bins):
+                # The 2-index in HwU are central value of bin
+                values = line.strip().split()
+                print(values)
+                central_values = _np.append(central_values, float(values[2]))
+                bin_bounds = _np.append(bin_bounds, float(values[0]))
+                line = next(hwu_f)
+            bin_bounds = _np.append(bin_bounds, float(values[1]))
+
+    assert(len(bin_bounds) > len(central_values))
+    return bin_bounds, central_values
 
     # startRun = 1
     # endRun = 150
@@ -70,32 +77,32 @@ def convert_hwu_to_numpy(filename: Path) -> np.ndrray:
 # print(repr(preds.reshape(((endRun - startRun) + 1), nBins)))
 
 
-def convertRun(runfile):
-    # print "tools/yoda2array: converting yodafile to numpy array"
-    read = "false"
-    central_values = np.array([])
-    final_array = []
+# def convertRun(runfile):
+    # # print "tools/yoda2array: converting yodafile to numpy array"
+    # read = "false"
+    # central_values = np.array([])
+    # final_array = []
 
-    # print("converting " + str(runfile))
+    # # print("converting " + str(runfile))
 
-    central_values = []
+    # central_values = []
 
-    with open(runfile, "r") as f:
-        for line in f:
-            if "fixed_order=ON" in line:
-                read = "true"
-                central_values = np.append(central_values, float(1.00000001))
-            if read == "true":
-                if len(line.split(" ")) > 3:
-                    central_values = np.append(
-                        central_values, float(line.split(" ")[3])
-                    )
-                    # central_values.append(float(line.split(" ")[3]) )
-            if "#launch /tmp/" + procDirName + "/" in line:
-                read = "false"
-        # print(central_values)
-        # central_values.reshape(endRun, nOps)
-    return central_values
+    # with open(runfile, "r") as f:
+        # for line in f:
+            # if "fixed_order=ON" in line:
+                # read = "true"
+                # central_values = np.append(central_values, float(1.00000001))
+            # if read == "true":
+                # if len(line.split(" ")) > 3:
+                    # central_values = np.append(
+                        # central_values, float(line.split(" ")[3])
+                    # )
+                    # # central_values.append(float(line.split(" ")[3]) )
+            # if "#launch /tmp/" + procDirName + "/" in line:
+                # read = "false"
+        # # print(central_values)
+        # # central_values.reshape(endRun, nOps)
+    # return central_values
 
 
 # totalPreds = np.array([])
