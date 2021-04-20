@@ -30,11 +30,11 @@ def convert_hwu_to_numpy(filename: _Path, num_of_hist: int = 1) -> (_np.ndarray,
             for i in range(bins):
                 # The 2-index in HwU are central value of bin
                 values = line.strip().split()
-                print(values)
                 central_values = _np.append(central_values, float(values[2]))
                 bin_bounds = _np.append(bin_bounds, float(values[0]))
                 line = next(hwu_f)
-            bin_bounds = _np.append(bin_bounds, float(values[1]))
+
+    bin_bounds = _np.append(bin_bounds, float(values[1]))
 
     assert(len(bin_bounds) > len(central_values))
     return bin_bounds, central_values
