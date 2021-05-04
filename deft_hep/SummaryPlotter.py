@@ -22,7 +22,7 @@ class SummaryPlotter:
     def __init__(self, config: ConfigReader, pb: PredictionBuilder, sampler: emcee.EnsembleSampler):
 
         samples = sampler.chain.reshape(-1, len(config.prior_limits))
-        
+
         # make directory to hold results of this run
         run_name = config.params["config"]["run_name"]
         results_path = Path("results") / run_name
@@ -113,11 +113,9 @@ class SummaryPlotter:
         )
 
         plotfilename = results_path / f"{run_name}.png"
-        logo = image.imread("logo/dEFT_logo.png")
 
         ax0 = fig.add_subplot(999)
         ax0.axis("off")
-        img = ax0.imshow(logo)
 
         fig.savefig(plotfilename)
         pl.close()
@@ -179,11 +177,9 @@ class SummaryPlotter:
         ax0 = fig_overlay.add_subplot(322)
         ax0.axis("off")
         img = ax0.imshow(resplot)
-        logo = image.imread("logo/dEFT_logo.png")
 
         ax0 = fig_overlay.add_subplot(5, 5, 15)
         ax0.axis("off")
-        img = ax0.imshow(logo)
 
         plotfilename = results_path / f"{run_name}_overlay.png"
 
