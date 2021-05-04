@@ -4,12 +4,12 @@
 	<img width="200" alt="dEFT" logo src="./logo/dEFT_logo.png">
 </p>
 
-dEFT is a tool for performing fits of EFT coefficients to HEP data in seconds. 
+dEFT is a tool for performing fits of EFT coefficients to HEP data in seconds.
 
 dEFT employs the Metropolis-Hastings algorithm to efficiently approximate
 the likelihood function of the data in the potentially higher-dimensional
 space of a typical EFT model. Even with O(10) dimensions, a dEFT fit typically takes ~30 seconds to run on the desktop.
- 
+
 ## The dEFT philosophy
 
 dEFT aims to facilitate fast and easy EFT fits on the desktop. A given analysis is entirely defined
@@ -24,11 +24,11 @@ dEFT is run as a python application and has been tested with python 3.X.
 
 dEFT requires a number of packages to be installed that can be easily
 obtained with the following pip commands:
- 
-## Dependencies
-* matplotlib - Used for plotting. 
 
-* NumPy - used for intermediate storage of data and predictions and numerical manipulations crucial to the fits. 
+## Dependencies
+* matplotlib - Used for plotting.
+
+* NumPy - used for intermediate storage of data and predictions and numerical manipulations crucial to the fits.
 
 * emcee - implements the Metrolpolis-Hastings method to estimate the N-dimensional likelihood function and hence derive the confidence/credible intervals on the EFT coefficients. More information on this package can be found here: http://dfm.io/emcee/current/.
 
@@ -39,7 +39,7 @@ obtained with the following pip commands:
 
 Install all dependencies using [poetry](https://python-poetry.org/) with:
 ```sh
-poetry install 
+poetry install
 ```
 or by using the `requirements.txt` file:
 
@@ -58,9 +58,9 @@ is fitted, the full covariance matrix is highly desirable.
 
 2. The model
   - The user must specify the EFT coefficients that are to be fitted along with associated
-    theoretical predictions for the data. 
-  - The predictions must be in the form of a set of "basis", predictions 
- from which predictions for any set of values for the coefficients can be generated. 
+    theoretical predictions for the data.
+  - The predictions must be in the form of a set of "basis", predictions
+ from which predictions for any set of values for the coefficients can be generated.
  These predictions can be manually written into the json file or a paths  existing yoda
  files containing the predictions may be provided.
 
@@ -71,7 +71,7 @@ These three inputs are encapsulated in a single JSON file which entirely
 defines a given dEFT analysis.
 
 ### JSON Specification
-#### Data
+#### Model
 | Item | Type | Description |
 |-|-|-|
 | `input` | String |  |
@@ -83,7 +83,7 @@ defines a given dEFT analysis.
 | `c_i_benchmark` | int |  |
 | `cross_terms` | bool |  |
 
-#### Model
+#### Data
 | Item | Type | Description |
 |-|-|-|
 | `observable` | String | Label for the observable of the analysis |
@@ -102,7 +102,7 @@ defines a given dEFT analysis.
 Once the JSON file has been defined, dEFT can be run with:
 
 ```python
-python run_dEFT.py analyses/myAnalysis.json 
+python run_dEFT.py analyses/myAnalysis.json
 ```
 
 James Keaveney
