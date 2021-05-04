@@ -6,7 +6,7 @@ import emcee
 import numpy as np
 import matplotlib.pyplot as pl
 
-from dEFT import (
+from deft_hep import (
     ConfigReader,
     PredictionBuilder,
     ModelValidator,

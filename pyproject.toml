@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "dEFT"
+name = "dEFT-hep"
 version = "0.1.0"
 description = "dEFT is a tool for performing fits of EFT coefficients to HEP data in seconds"
 authors = [
@@ -7,6 +7,7 @@ authors = [
 	"Alexander Veltman <alexveltman@protonmail.com>",
 ]
 license = "GPL3"
+repository = "https://github.com/codecalec/dEFT"
 
 [tool.poetry.dependencies]
 python = ">=3.7"

@@ -57,7 +57,7 @@ class PredictionBuilder:
             # Account for quadratic cross term
             combs = itertools.combinations(list(row), 2)
             for comb in combs:
-                X = np.append(X, comb[0] * comb[1])        
+                X = np.append(X, comb[0] * comb[1])
         X = X.reshape(num_rows, triangular_number(len(ci[0])))
         return X
 
