@@ -2,7 +2,6 @@ import time
 import json
 import sys
 
-import emcee
 import numpy as np
 import matplotlib.pyplot as pl
 
@@ -22,8 +21,6 @@ start = time.time()
 filename = sys.argv[1]
 config = ConfigReader(filename)
 
-# if config.params["config"]["model"]["input"] == "numpy":
-
 pb = PredictionBuilder(len(config.prior_limits), config.samples, config.predictions)
 
 ##########################################################
@@ -34,7 +31,9 @@ if len(sys.argv) > 2:
     filename_test = sys.argv[2]
     config_test = ConfigReader(filename_test)
 
-    ModelValidator(config_test, pb)
+    mv = ModelValidator(pb)
+    samples, predictions = mv.validate(config_test)
+    mv.comparison_plot(config_test, predictions, use_pdf=False)
 
 #######################################
 ######### ESTIMATE POSTERIOR ##########
