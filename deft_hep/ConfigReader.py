@@ -6,6 +6,7 @@ from numpy.linalg import inv
 
 class ConfigReader:
     """ Reads JSON configuration file"""
+
     def __init__(self, filename: str):
         self.filename = filename
         coefficients = []
@@ -48,8 +49,5 @@ class ConfigReader:
         self.tex_labels = ["$" + c + "$" for c in self.coefficients]
         x_vals = np.zeros(len(self.x_vals) - 1)
         for x_val in range(0, len(self.bins) - 1):
-            x_vals[x_val] = (
-                self.bins[x_val]
-                + self.bins[x_val + 1]
-            ) / 2.0
+            x_vals[x_val] = (self.bins[x_val] + self.bins[x_val + 1]) / 2.0
         self.x_vals = x_vals

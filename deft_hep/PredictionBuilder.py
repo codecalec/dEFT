@@ -71,7 +71,7 @@ class PredictionBuilder:
         X = X.reshape(1, triangular_number(len(ci)))
         return X
 
-    def make_prediction(self, c: np.ndarray) -> np.ndarray :
+    def make_prediction(self, c: np.ndarray) -> np.ndarray:
         """ Produce the predicted observable for a set of coefficients (excluding SM coefficient) """
         c = np.append(1.0, c)
         cInputAr = self.makeCoeffPoint(c)

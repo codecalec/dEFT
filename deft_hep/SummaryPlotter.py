@@ -18,8 +18,14 @@ rc("text")
 from .ConfigReader import ConfigReader
 from .PredictionBuilder import PredictionBuilder
 
+
 class SummaryPlotter:
-    def __init__(self, config: ConfigReader, pb: PredictionBuilder, sampler: emcee.EnsembleSampler):
+    def __init__(
+        self,
+        config: ConfigReader,
+        pb: PredictionBuilder,
+        sampler: emcee.EnsembleSampler,
+    ):
 
         samples = sampler.chain.reshape(-1, len(config.prior_limits))
 

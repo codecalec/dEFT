@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,7 +17,7 @@ class ModelValidator:
         self.nOps = pb.nOps
         self.pb = pb
 
-    def validate(self, config_test: ConfigReader) -> (list[float], list[np.ndarray]):
+    def validate(self, config_test: ConfigReader) -> (List[float], List[np.ndarray]):
         """ Generate predictions for the test samples in the test configuration using the model from the PredictionBuilder """
 
         test_samples = config_test.params["config"]["model"]["samples"]
@@ -48,7 +49,7 @@ class ModelValidator:
     def comparison_plot(
         self,
         config: ConfigReader,
-        model_predictions: list[np.ndarray],
+        model_predictions: List[np.ndarray],
         filepath: str = None,
         use_pdf: bool = False,
     ):
