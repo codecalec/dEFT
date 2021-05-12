@@ -29,7 +29,6 @@ class ConfigReader:
             self.n_total = self.params["config"]["fit"]["n_total"]
             self.cov = self.params["config"]["data"]["covariance_matrix"]
             self.icov = inv(self.cov)
-            self.x_vals = self.params["config"]["data"]["bins"]
             self.samples = np.asarray(self.params["config"]["model"]["samples"])
             if self.params["config"]["model"]["input"] == "numpy":
                 self.predictions = np.asarray(
