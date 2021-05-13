@@ -32,9 +32,10 @@ def convert_hwu_to_numpy(
                 # The 2-index in HwU are central value of bin
                 values = line.strip().split()
                 central_values = _np.append(central_values, float(values[2]))
-                bin_lefts = _np.append(bin_bounds, float(values[0]))
-                bin_rights = _np.append(bin_bounds, float(values[1]))
+                bin_lefts = _np.append(bin_lefts, float(values[0]))
+                bin_rights = _np.append(bin_rights, float(values[1]))
                 line = next(hwu_f)
 
-    assert len(bin_bounds) > len(central_values)
+    assert len(bin_lefts) == len(central_values)
+    assert len(bin_rights) == len(central_values)
     return (bin_lefts, bin_rights, central_values)
