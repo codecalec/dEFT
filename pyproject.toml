@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dEFT-hep"
-version = "0.3.2"
+version = "0.4.0"
 description = "dEFT is a tool for performing fits of EFT coefficients to HEP data in seconds"
 authors = [
 	"James Keaveney <keaveney@cern.ch>",
