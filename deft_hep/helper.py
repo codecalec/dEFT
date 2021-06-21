@@ -22,9 +22,7 @@ def convert_hwu_to_numpy(
             while (match := _re.search(r"<histogram> (\d+) ", line)) is None:
                 line = next(hwu_f)
                 if line is None:
-                    raise RuntimeError(
-                        f"No histogram found in HwU file: {filename}"
-                    )
+                    raise RuntimeError(f"No histogram found in HwU file: {filename}")
             bins = int(match.group(1))
 
             line = next(hwu_f)

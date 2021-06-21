@@ -7,6 +7,8 @@ from numpy.linalg import inv
 class ConfigReader:
     """ Reads JSON configuration file"""
 
+    # TODO: Sort out parameters and improve usability
+
     def __init__(self, filename: str):
         self.filename = filename
         coefficients = []

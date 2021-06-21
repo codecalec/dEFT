@@ -11,6 +11,7 @@ _DATA = None
 _ICOV = None
 _CONFIG = None
 
+
 def ln_prior(c: np.ndarray, config: ConfigReader) -> float:
     lnp = 0.0
     for scan_ind in range(0, len(c)):
@@ -26,7 +27,7 @@ def ln_prob(
 ) -> float:
     pred = _PB.make_prediction(c)
     diff = pred - _DATA
-    ll = (-np.dot(diff, np.dot(_ICOV, diff))) + (ln_prior(c, _CONFIG))
+    ll = (-np.dot(diff, np.dot(_ICOV, diff))) + ln_prior(c, _CONFIG)
     return ll
 
 
@@ -37,6 +38,7 @@ class MCMCFitter:
         self,
         config: ConfigReader,
         pb: PredictionBuilder,
+        initial_variance: float = 1e-4,
         use_multiprocessing: bool = True,
     ):
         n_walkers = config.n_walkers
@@ -44,7 +46,7 @@ class MCMCFitter:
         n_dim = int(len(config.prior_limits))
         n_burnin = config.n_burnin
         n_total = config.n_total
-        p0 = [np.zeros(n_dim) + 1e-4 * np.random.randn(n_dim) for i in range(n_walkers)]
+        p0 = [initial_variance * np.random.randn(n_dim) for i in range(n_walkers)] # Initial position of walkers 
 
         global _DATA
         global _ICOV
