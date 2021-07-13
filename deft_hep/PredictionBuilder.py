@@ -1,11 +1,13 @@
-import numpy as np
 import itertools
-from sklearn.linear_model import LinearRegression
-
 from typing import List
 
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
-def triangular_number(n: int) -> int:
+from .ConfigReader import ConfigReader
+
+
+def _triangular_number(n: int) -> int:
     return int(n * (n + 1) / 2)
 
 
@@ -16,23 +18,26 @@ class PredictionBuilder:
 
     def __init__(
         self,
-        nOps: int,
-        samples: List[float],
-        preds: List[List[float]],
+        config: ConfigReader,
     ):
-        """Constructor for PredictionBuilder"""
-        self.nOps = nOps
-        self.nSamples = int((nOps + 1) * (nOps + 2) / 2)
-        self.model = self.build_regression_model(nOps, samples, preds)
+        """
+        Constructor for PredictionBuilder
 
-    def build_regression_model(
-        self, nOps: int, samples: List[float], preds: List[List[float]]
+        :param config: Configuration for analysis.
+        :type config: ConfigReader.
+        """
+        self.nOps = len(config.prior_limits)
+        self.nSamples = int((self.nOps + 1) * (self.nOps + 2) / 2)
+        self.model = self._build_regression_model(config.samples, config.predictions)
+
+    def _build_regression_model(
+        self, samples: List[float], preds: List[List[float]]
     ) -> LinearRegression:
         """Initialise morphing model using samples with predicted values"""
         if len(preds) < self.nSamples:
             raise TypeError(
                 "morphing with "
-                + str(nOps)
+                + str(self.nOps)
                 + " coefficients requires at least "
                 + str(self.nSamples)
                 + " samples,  but only "
@@ -41,7 +46,7 @@ class PredictionBuilder:
             )
 
         # convert to vector of coefficient factors to linearise the morphing
-        cInputAr = self.make_coefficients(samples)
+        cInputAr = self._make_coefficients(samples)
 
         # define model
         model = LinearRegression()
@@ -51,7 +56,7 @@ class PredictionBuilder:
 
         return model
 
-    def make_coefficients(self, ci: List[float]) -> np.ndarray:
+    def _make_coefficients(self, ci: List[float]) -> np.ndarray:
         X = np.array([])
         num_rows = np.shape(ci)[0]
         for row in ci:
@@ -62,22 +67,31 @@ class PredictionBuilder:
             combs = itertools.combinations(list(row), 2)
             for comb in combs:
                 X = np.append(X, comb[0] * comb[1])
-        X = X.reshape(num_rows, triangular_number(len(ci[0])))
+        X = X.reshape(num_rows, _triangular_number(len(ci[0])))
         return X
 
-    def make_coeff_point(self, ci: np.ndarray) -> np.ndarray:
+    def _make_coeff_point(self, ci: np.ndarray) -> np.ndarray:
         X = np.array([])
         X = np.append(X, ci ** 2)
         combs = itertools.combinations(list(ci), 2)
         for comb in combs:
             X = np.append(X, comb[0] * comb[1])
 
-        X = X.reshape(1, triangular_number(len(ci)))
+        X = X.reshape(1, _triangular_number(len(ci)))
         return X
 
     def make_prediction(self, c: np.ndarray) -> np.ndarray:
-        """Produce the predicted observable for a set of coefficients (excluding SM coefficient)"""
+        """
+        Produce the predicted observable for a set of coefficients (excluding SM coefficient)
+
+        :param c: A set of coefficients to be used by the model in order to make a prediction. Should have a coefficient for each operator in the model.
+        :type c: numpy.ndarray
+        """
+
+        if len(c) != self.nOps:
+            raise Exception(f"An incorrect number of coefficients were supplied. Model requires coeffiecient for {self.nOps} operators but {len(c)} were supplied")
+
         c = np.append(1.0, c)
-        cInputAr = self.make_coeff_point(c)
+        cInputAr = self._make_coeff_point(c)
         pred = self.model.predict(cInputAr)
         return pred[0]
