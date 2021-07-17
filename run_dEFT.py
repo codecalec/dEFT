@@ -43,7 +43,7 @@ if len(sys.argv) > 2:
 
 if len(sys.argv) <= 2:
 
-    fitter = MCMCFitter(config, pb, use_multiprocessing=True)
+    fitter = MCMCFitter(config, pb, use_multiprocessing=False)
     sampler = fitter.sampler
 
     print(

@@ -89,7 +89,9 @@ class PredictionBuilder:
         """
 
         if len(c) != self.nOps:
-            raise Exception(f"An incorrect number of coefficients were supplied. Model requires coeffiecient for {self.nOps} operators but {len(c)} were supplied")
+            raise Exception(
+                f"An incorrect number of coefficients were supplied. Model requires coeffiecient for {self.nOps} operators but {len(c)} were supplied"
+            )
 
         c = np.append(1.0, c)
         cInputAr = self._make_coeff_point(c)

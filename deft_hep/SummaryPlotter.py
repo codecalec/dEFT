@@ -29,17 +29,17 @@ class SummaryPlotter:
         """
         Create basic plots using results from MCMCFitter
 
-        :param config: Config for the analysis.
-        :type config: ConfigReader.
+        :param config: Config for the analysis
+        :type config: ConfigReader
 
-        :param pb: Model for predicting coefficient values.
+        :param pb: Model for predicting coefficient values
         :type pb: PredictionBuilder
 
         :param fitter: Fitter for the analysis.
         :type fitter: MCMCFitter
 
-        :param result_path: Path where plots should be saved.
-        :type result_path: str or pathlib.Path.
+        :param result_path: Path where plots should be saved
+        :type result_path: str or pathlib.Path
         """
 
         if "result_path" not in kwargs:
@@ -57,8 +57,7 @@ class SummaryPlotter:
         self.config = config
         self.pb = pb
 
-
-    def fit_result(self, ylabel: str, show_plot:bool = True, **kwargs):
+    def fit_result(self, ylabel: str, show_plot: bool = True, **kwargs):
         """
         Generate plot comparing the model with optimised coefficients with data present in the configuration within ConfigBuilder
 
@@ -121,23 +120,22 @@ class SummaryPlotter:
             plt.show()
         plt.close()
 
-
-    def corner(self, show_plot:bool = True, **kwargs):
+    def corner(self, show_plot: bool = True, **kwargs):
         """
-        Generate corner plot using [corner](https://corner.readthedocs.io/en/latest/)
+        Generate corner plot using `corner <https://corner.readthedocs.io/en/latest/>`_.
 
         :param show_plot: Determines whether `plt.show()` is called after a plot is created.
-        :type show_plot: boolean.
+        :type show_plot: bool
 
         :param filename:
-        :type filename: str.
+        :type filename: str
         """
         if "filename" in kwargs:
             filename = kwargs["filename"]
         else:
             filename = f"{self.config.run_name}.png"
 
-        #  make "corner" plot
+        #  make corner plot
         labels = []
         ranges = []
         for c in self.config.params["config"]["model"]["prior_limits"].keys():

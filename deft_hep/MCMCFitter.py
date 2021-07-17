@@ -9,16 +9,14 @@ from .PredictionBuilder import PredictionBuilder
 _PB = None
 _DATA = None
 _ICOV = None
-_CONFIG = None
+_BOUNDS = None
 
 
-def ln_prior(c: np.ndarray, config: ConfigReader) -> float:
+def ln_prior(c: np.ndarray) -> float:
     lnp = 0.0
-    for scan_ind in range(0, len(c)):
-        if (c[scan_ind] < config.prior_limits[config.coefficients[scan_ind]][0]) | (
-            c[scan_ind] > config.prior_limits[config.coefficients[scan_ind]][1]
-        ):
-            lnp = -np.inf
+
+    if (c < _BOUNDS[0]).any() or (_BOUNDS[1] < c).any():
+        lnp = -np.inf
     return lnp
 
 
@@ -27,7 +25,7 @@ def ln_prob(
 ) -> float:
     pred = _PB.make_prediction(c)
     diff = pred - _DATA
-    ll = (-np.dot(diff, np.dot(_ICOV, diff))) + ln_prior(c, _CONFIG)
+    ll = (-np.dot(diff, np.dot(_ICOV, diff))) + ln_prior(c)
     return ll
 
 
@@ -39,22 +37,24 @@ class MCMCFitter:
         config: ConfigReader,
         pb: PredictionBuilder,
         initial_variance: float = 1e-4,
-        use_multiprocessing: bool = True,
+        use_multiprocessing: bool = False,
     ):
         n_walkers = config.n_walkers
 
         n_dim = int(len(config.prior_limits))
         n_burnin = config.n_burnin
         n_total = config.n_total
-        p0 = [initial_variance * np.random.randn(n_dim) for i in range(n_walkers)] # Initial position of walkers 
+        p0 = [
+            initial_variance * np.random.randn(n_dim) for i in range(n_walkers)
+        ]  # Initial position of walkers
 
         global _DATA
         global _ICOV
-        global _CONFIG
+        global _BOUNDS
         global _PB
-        _DATA = config.params["config"]["data"]["central_values"]
-        _ICOV = config.icov
-        _CONFIG = config
+        _DATA = config.data
+        _ICOV = np.linalg.inv(config.cov)
+        _BOUNDS = np.array(list(config.prior_limits.values())).T
         _PB = pb
 
         if use_multiprocessing:
@@ -66,7 +66,7 @@ class MCMCFitter:
                     pool=pool,
                 )
                 # Run burn in runs
-                pos, prob, state = sampler.run_mcmc(p0, n_burnin, progress=True)
+                pos, _, _ = sampler.run_mcmc(p0, n_burnin, progress=True)
                 sampler.reset()
 
                 # Perform proper run
@@ -78,7 +78,7 @@ class MCMCFitter:
                 ln_prob,
             )
             # Run burn in runs
-            pos, prob, state = sampler.run_mcmc(p0, n_burnin, progress=True)
+            pos, _, _ = sampler.run_mcmc(p0, n_burnin, progress=True)
             sampler.reset()
 
             # Perform proper run
