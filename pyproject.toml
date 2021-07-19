@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "dEFT-hep"
-version = "0.4.0"
+version = "0.5.0"
 description = "dEFT is a tool for performing fits of EFT coefficients to HEP data in seconds"
 authors = [
-	"James Keaveney <keaveney@cern.ch>",
 	"Alexander Veltman <alexveltman@protonmail.com>",
+	"James Keaveney <keaveney@cern.ch>",
 ]
 license = "GPL3"
 repository = "https://github.com/codecalec/dEFT"

@@ -22,3 +22,6 @@ root_inputs/*
 
 poetry.lock
 results/*
+
+# distribution
+dist/

@@ -1,4 +1,5 @@
 from multiprocessing import Pool
+from typing import Optional
 
 import numpy as np
 import emcee
@@ -6,10 +7,10 @@ import emcee
 from .ConfigReader import ConfigReader
 from .PredictionBuilder import PredictionBuilder
 
-_PB = None
-_DATA = None
-_ICOV = None
-_BOUNDS = None
+_PB: Optional[PredictionBuilder] = None
+_DATA: Optional[np.ndarray] = None
+_ICOV: Optional[np.ndarray]  = None
+_BOUNDS: Optional[np.ndarray]  = None
 
 
 def ln_prior(c: np.ndarray) -> float:
@@ -45,7 +46,7 @@ class MCMCFitter:
         n_burnin = config.n_burnin
         n_total = config.n_total
         p0 = [
-            initial_variance * np.random.randn(n_dim) for i in range(n_walkers)
+            initial_variance * np.random.randn(n_dim) for _ in range(n_walkers)
         ]  # Initial position of walkers
 
         global _DATA
