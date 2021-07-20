@@ -1,8 +1,6 @@
-import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import matplotlib.image as image
 
 import numpy as np
 
@@ -80,39 +78,45 @@ class SummaryPlotter:
         xlabel = self.config.observable if "xlabel" not in kwargs else kwargs["xlabel"]
 
         if len(self.config.coefficients) == 1:
-            label_bestfit = f"Best Fit: {self.config.coefficients[0]}={self.mcmc_params[0]:.3f}+-{np.sqrt(self.mcmc_params_cov):.3f}"
+            label_bestfit = f"Best Fit: {self.config.tex_labels[0]}={self.mcmc_params[0]:.3f}$\pm${np.sqrt(self.mcmc_params_cov):.3f}"
         else:
             label_bestfit = "Best Fit:"
             for c_name, c_value, c_error in zip(
-                self.config.coefficients,
+                self.config.tex_labels,
                 self.mcmc_params,
                 np.sqrt(np.diagonal(self.mcmc_params_cov)),
             ):
-                label_bestfit += f" {c_name}={c_value:.3f}+-{c_error:.3f}"
+                label_bestfit += f"{c_name}={c_value:.3f}$\pm${c_error:.3f}"
+
+
+        data_err = np.diagonal(self.config.cov)
+
+        half_bin_width = [
+            (self.config.bins[i + 1] - self.config.bins[i]) / 2
+            for i in range(len(self.config.bins) - 1)
+        ]
+        plt.errorbar(
+            self.config.x_vals,
+            self.config.data,
+            fmt=".",
+            xerr=half_bin_width,
+            yerr=data_err,
+            label=data_label,
+        )
 
         plt.errorbar(
             self.config.x_vals,
             self.pb.make_prediction(self.mcmc_params),
-            fmt="m",
+            fmt="mo",
             ls="None",
             xerr=0.0,
             yerr=0.0,
             label=label_bestfit,
         )
-        plt.errorbar(
-            self.config.x_vals,
-            self.config.params["config"]["data"]["central_values"],
-            fmt="o",
-            xerr=0.25,
-            yerr=0.05,
-            label=data_label,
-        )
 
         ax = plt.gca()
         ax.set_xlabel(xlabel, fontsize=18)
         ax.set_ylabel(ylabel, fontsize=18)
-        ax.xaxis.set_label_coords(0.85, -0.065)
-        ax.yaxis.set_label_coords(-0.037, 0.83)
         plt.legend(loc=2)
         plt.savefig(self.path / filename)
 
