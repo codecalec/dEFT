@@ -33,7 +33,7 @@ class SummaryPlotter:
         :param pb: Model for predicting coefficient values
         :type pb: PredictionBuilder
 
-        :param fitter: Fitter for the analysis.
+        :param fitter: Fitter for the analysis
         :type fitter: MCMCFitter
 
         :param result_path: Path where plots should be saved
@@ -59,14 +59,14 @@ class SummaryPlotter:
         """
         Generate plot comparing the model with optimised coefficients with data present in the configuration within ConfigBuilder
 
-        :param ylabel: Label for y-axis of plot.
-        :type ylabel: str.
+        :param ylabel: Label for y-axis of plot
+        :type ylabel: str
 
-        :param show_plot: Determines whether `plt.show()` is called after a plot is created.
-        :type show_plot: boolean.
+        :param show_plot: Determines whether `plt.show()` is called after a plot is created
+        :type show_plot: boolean
 
         :param filename: Name of output file
-        :type filename: str.
+        :type filename: str
         """
 
         if "filename" in kwargs:
@@ -86,7 +86,7 @@ class SummaryPlotter:
                 self.mcmc_params,
                 np.sqrt(np.diagonal(self.mcmc_params_cov)),
             ):
-                label_bestfit += f"{c_name}={c_value:.3f}$\pm${c_error:.3f}"
+                label_bestfit += f" {c_name}={c_value:.3f}$\pm${c_error:.3f}"
 
 
         data_err = np.diagonal(self.config.cov)
@@ -131,7 +131,7 @@ class SummaryPlotter:
         :param show_plot: Determines whether `plt.show()` is called after a plot is created.
         :type show_plot: bool
 
-        :param filename:
+        :param filename: Provide filename for output file
         :type filename: str
         """
         if "filename" in kwargs:
