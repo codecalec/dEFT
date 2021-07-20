@@ -55,7 +55,9 @@ class SummaryPlotter:
         self.config = config
         self.pb = pb
 
-    def fit_result(self, ylabel: str, show_plot: bool = True, **kwargs):
+    def fit_result(
+        self, ylabel: str, show_plot: bool = True, log_scale: bool = False, **kwargs
+    ):
         """
         Generate plot comparing the model with optimised coefficients with data present in the configuration within ConfigBuilder
 
@@ -63,10 +65,13 @@ class SummaryPlotter:
         :type ylabel: str
 
         :param show_plot: Determines whether `plt.show()` is called after a plot is created
-        :type show_plot: boolean
+        :type show_plot: bool
 
         :param filename: Name of output file
         :type filename: str
+
+        :param log_scale: Use a log scale for plot
+        :type log_scale: bool
         """
 
         if "filename" in kwargs:
@@ -88,13 +93,13 @@ class SummaryPlotter:
             ):
                 label_bestfit += f" {c_name}={c_value:.3f}$\pm${c_error:.3f}"
 
-
         data_err = np.diagonal(self.config.cov)
 
         half_bin_width = [
             (self.config.bins[i + 1] - self.config.bins[i]) / 2
             for i in range(len(self.config.bins) - 1)
         ]
+
         plt.errorbar(
             self.config.x_vals,
             self.config.data,
@@ -120,8 +125,12 @@ class SummaryPlotter:
         plt.legend(loc=2)
         plt.savefig(self.path / filename)
 
+        if log_scale:
+            plt.yscale("log")
+
         if show_plot:
             plt.show()
+
         plt.close()
 
     def corner(self, show_plot: bool = True, **kwargs):
