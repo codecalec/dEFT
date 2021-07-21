@@ -1,5 +1,5 @@
 from multiprocessing import Pool
-from typing import Optional
+from typing import Optional, List
 
 import numpy as np
 import emcee
@@ -9,8 +9,8 @@ from .PredictionBuilder import PredictionBuilder
 
 _PB: Optional[PredictionBuilder] = None
 _DATA: Optional[np.ndarray] = None
-_ICOV: Optional[np.ndarray]  = None
-_BOUNDS: Optional[np.ndarray]  = None
+_ICOV: Optional[np.ndarray] = None
+_BOUNDS: Optional[np.ndarray] = None
 
 
 def ln_prior(c: np.ndarray) -> float:
@@ -37,16 +37,41 @@ class MCMCFitter:
         self,
         config: ConfigReader,
         pb: PredictionBuilder,
-        initial_variance: float = 1e-4,
+        initial_pos: float or np.ndarray = 0,
+        initial_deviation: float or np.ndarray = 1e-4,
         use_multiprocessing: bool = False,
     ):
-        n_walkers = config.n_walkers
+        """
+        :param config:
+            Configuration for analysis
+        :type config: ConfigReader
 
-        n_dim = int(len(config.prior_limits))
+        :param pb:
+            Model on which the fitting will be performed
+        :type pb: PredictionBuilder
+
+        :param initial_pos:
+            Initial location on which to place walkers around. Must be a single number which will apply to all coefficients or a NumPy array of the same dimension as number of coefficients.
+        :type initial_pos: float or numpy.ndarray
+
+        :param initial_deviation:
+            Standard deviation of normal distribution centred at ``initial_pos`` around which the walkers will be placed.
+
+            **Warning**: Walkers are currently uniformly placed with a width of the deviation. This is planned to change.
+
+        :param use_multiprocessing:
+            Toggles whether to use `emcee's <https://emcee.readthedocs.io/en/stable/>_` multiprocessing capabilities.
+        :type user_multiprocessing: bool
+        """
+
+        n_walkers = config.n_walkers
+        n_dim = len(config.prior_limits)
         n_burnin = config.n_burnin
         n_total = config.n_total
+
         p0 = [
-            initial_variance * np.random.randn(n_dim) for _ in range(n_walkers)
+            initial_pos + initial_deviation * np.random.rand(n_dim)
+            for _ in range(n_walkers)
         ]  # Initial position of walkers
 
         global _DATA
