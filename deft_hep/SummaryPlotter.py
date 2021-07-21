@@ -119,14 +119,15 @@ class SummaryPlotter:
             label=label_bestfit,
         )
 
+        if log_scale:
+            plt.yscale("log")
+
         ax = plt.gca()
         ax.set_xlabel(xlabel, fontsize=18)
         ax.set_ylabel(ylabel, fontsize=18)
-        plt.legend(loc=2)
+        plt.legend()
         plt.savefig(self.path / filename)
 
-        if log_scale:
-            plt.yscale("log")
 
         if show_plot:
             plt.show()
