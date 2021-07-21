@@ -23,12 +23,14 @@ class PredictionBuilder:
         """
         Constructor for PredictionBuilder
 
-        :param config: Configuration for analysis.
+        :param config:
+            Configuration for analysis.
         :type config: ConfigReader.
         """
         self.nOps = len(config.prior_limits)
         self.nSamples = int((self.nOps + 1) * (self.nOps + 2) / 2)
-        self.model = self._build_regression_model(config.samples, config.predictions)
+        scaled_predictions = config.predictions * config.inclusive_k_factor
+        self.model = self._build_regression_model(config.samples, scaled_predictions)
 
     def _build_regression_model(
         self, samples: List[float], preds: List[List[float]]
@@ -84,7 +86,8 @@ class PredictionBuilder:
         """
         Produce the predicted observable for a set of coefficients (excluding SM coefficient)
 
-        :param c: A set of coefficients to be used by the model in order to make a prediction. Should have a coefficient for each operator in the model.
+        :param c:
+            A set of coefficients to be used by the model in order to make a prediction. Should have a coefficient for each operator in the model.
         :type c: numpy.ndarray
         """
 

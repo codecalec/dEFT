@@ -8,39 +8,51 @@ class ConfigReader:
     """
     Reads JSON configuration file and acts as a full configuration of the analysis
 
-    :param run_name: Label for analysis
+    :param run_name:
+        Label for analysis
     :type run_name: str
 
-    :param observable: Label for observables
+    :param observable:
+        Label for observables
     :type observable: str, list[str]
 
-    :param bins: Bin edges
+    :param bins:
+        Bin edges
     :type bins: list[float], list[list[float]]
 
-    :param data: Central value of bins
+    :param data:
+        Central value of bins
     :type data: list[float], list[list[float]]
 
-    :param coefficients: Label for each coefficient
+    :param coefficients:
+        Label for each coefficient
 
-    :param prior_limits: Bounds for each coefficient.
-    :type prior_limits: list[float]
+    :param prior_limits:
+        Bounds for each coefficient.
+    :type prior_limits: dict[str,list[float]]
 
-    :param samples: Samples of coefficient values
-    :type samples: list[list[float]]
+    :param samples:
+        Samples of coefficient values
+    :type samples: np.ndarray
 
-    :param predictions: Predicted Monte Carlo signal for the corresponding set of coefficients
-    :type predictions: list[list[float]]
+    :param predictions:
+        Predicted Monte Carlo signal for the corresponding set of coefficients
+    :type predictions: np.ndarray
 
-    :param inclusive_k_factor: K factor used to scale predictions depending on order of Monte Carlo generation
-    :type inclusive_k_factor: float
+    :param inclusive_k_factor:
+        K factor used to scale predictions depending on order of Monte Carlo generation. This can be given as a histogram wide scaling or provided per bin.
+    :type inclusive_k_factor: float or np.ndarray
 
-    :param n_walkers: Number of walkers to use for MCMC fitting
+    :param n_walkers:
+        Number of walkers to use for MCMC fitting
     :type n_walkers: int
 
-    :param n_burnin: Number of burn in runs to perform before beginning MCMC fitting
+    :param n_burnin:
+        Number of burn in runs to perform before beginning MCMC fitting
     :type n_burnin: int
 
-    :param n_total: Number of total iterations for MCMC fitting
+    :param n_total:
+        Number of total iterations for MCMC fitting
     :type n_total: int
     """
 
@@ -92,9 +104,11 @@ class ConfigReader:
             self.n_burnin = self.params["config"]["fit"]["n_burnin"]
             self.n_total = self.params["config"]["fit"]["n_total"]
             self.samples = np.array(self.params["config"]["model"]["samples"])
-            self.inclusive_k_factor = self.params["config"]["model"][
-                "inclusive_k_factor"
-            ]
+
+            k_factor = self.params["config"]["model"]["inclusive_k_factor"]
+            self.inclusive_k_factor = (
+                k_factor if not isinstance(k_factor, list) else np.array(k_factor)
+            )
 
             if (
                 "input" not in self.params["config"]["model"]
