@@ -1,5 +1,5 @@
 from multiprocessing import Pool
-from typing import Optional, List
+from typing import Optional, List, Union
 
 import numpy as np
 import emcee
@@ -37,8 +37,8 @@ class MCMCFitter:
         self,
         config: ConfigReader,
         pb: PredictionBuilder,
-        initial_pos: float or np.ndarray = 0,
-        initial_deviation: float or np.ndarray = 1e-4,
+        initial_pos: Union[float, np.ndarray] = 0,
+        initial_deviation: Union[float, np.ndarray] = 1e-4,
         use_multiprocessing: bool = False,
     ):
         """

@@ -128,13 +128,12 @@ class SummaryPlotter:
         plt.legend()
         plt.savefig(self.path / filename)
 
-
         if show_plot:
             plt.show()
 
         plt.close()
 
-    def corner(self, show_plot: bool = True, **kwargs):
+    def corner(self, show_plot: bool = True, filename: str = None, **corner_kwargs):
         """
         Generate corner plot using `corner <https://corner.readthedocs.io/en/latest/>`_.
 
@@ -142,31 +141,25 @@ class SummaryPlotter:
         :type show_plot: bool
 
         :param filename: Provide filename for output file
-        :type filename: str
+        :type filename: Optional[str]
         """
-        if "filename" in kwargs:
-            filename = kwargs["filename"]
-        else:
+        if filename is None:
             filename = f"{self.config.run_name}.png"
 
         #  make corner plot
-        labels = []
-        ranges = []
-        for c in self.config.params["config"]["model"]["prior_limits"].keys():
-            label = "$" + c + "$"
-            labels.append(label)
-            ranges.append(self.config.params["config"]["model"]["prior_limits"][c])
+        ranges = [limit for limit in self.config.prior_limits.values()]
 
         fig = corner.corner(
             self.samples,
             labels=self.config.tex_labels,
             label_kwargs={"fontsize": 18},
-            range=ranges,
+            # range=ranges, todo: Reimplement
             quantiles=[0.16, 0.84],
-            levels=(1 - np.exp(-0.5),),
+            # levels=(1 - np.exp(-0.5),), Causes ValueError: Contour levels must be increasing
             truths=np.zeros(len(labels)),
             show_titles=True,
             title_kwargs={"fontsize": 18},
+            **corner_kwargs,
         )
 
         ax0 = fig.add_subplot(999)
