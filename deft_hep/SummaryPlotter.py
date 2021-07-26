@@ -156,7 +156,7 @@ class SummaryPlotter:
             # range=ranges, todo: Reimplement
             quantiles=[0.16, 0.84],
             # levels=(1 - np.exp(-0.5),), Causes ValueError: Contour levels must be increasing
-            truths=np.zeros(len(labels)),
+            truths=np.zeros(len(self.config.tex_labels)),
             show_titles=True,
             title_kwargs={"fontsize": 18},
             **corner_kwargs,
