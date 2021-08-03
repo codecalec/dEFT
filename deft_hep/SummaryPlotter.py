@@ -93,7 +93,7 @@ class SummaryPlotter:
             ):
                 label_bestfit += f" {c_name}={c_value:.3f}$\pm${c_error:.3f}"
 
-        data_err = np.diagonal(self.config.cov)
+        data_err = np.sqrt(np.diagonal(self.config.cov))
 
         half_bin_width = [
             (self.config.bins[i + 1] - self.config.bins[i]) / 2
