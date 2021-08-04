@@ -91,7 +91,7 @@ class SummaryPlotter:
                 self.mcmc_params,
                 np.sqrt(np.diagonal(self.mcmc_params_cov)),
             ):
-                label_bestfit += f" {c_name}={c_value:.3f}$\pm${c_error:.3f}"
+                label_bestfit += f" {c_name}={c_value:.3f}$\pm${c_error:.3f}\n"
 
         data_err = np.sqrt(np.diagonal(self.config.cov))
 
@@ -125,7 +125,7 @@ class SummaryPlotter:
         ax = plt.gca()
         ax.set_xlabel(xlabel, fontsize=18)
         ax.set_ylabel(ylabel, fontsize=18)
-        plt.legend()
+        plt.legend(bbox_to_anchor=(1,1), loc="upper left")
         plt.savefig(self.path / filename)
 
         if show_plot:
