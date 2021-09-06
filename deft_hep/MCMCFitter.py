@@ -1,5 +1,5 @@
 from multiprocessing import Pool
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Tuple
 
 import numpy as np
 import emcee
@@ -40,6 +40,7 @@ class MCMCFitter:
         initial_pos: Union[float, np.ndarray] = 0,
         initial_deviation: Union[float, np.ndarray] = 1e-4,
         use_multiprocessing: bool = False,
+        verbose: bool = True,
     ):
         """
         :param config:
@@ -92,11 +93,11 @@ class MCMCFitter:
                     pool=pool,
                 )
                 # Run burn in runs
-                pos, _, _ = sampler.run_mcmc(p0, n_burnin, progress=True)
+                pos, _, _ = sampler.run_mcmc(p0, n_burnin, progress=verbose)
                 sampler.reset()
 
                 # Perform proper run
-                sampler.run_mcmc(pos, n_total, progress=True)
+                sampler.run_mcmc(pos, n_total, progress=verbose)
         else:
             sampler = emcee.EnsembleSampler(
                 n_walkers,
@@ -104,10 +105,16 @@ class MCMCFitter:
                 ln_prob,
             )
             # Run burn in runs
-            pos, _, _ = sampler.run_mcmc(p0, n_burnin, progress=True)
+            pos, _, _ = sampler.run_mcmc(p0, n_burnin, progress=verbose)
             sampler.reset()
 
             # Perform proper run
-            sampler.run_mcmc(pos, n_total, progress=True)
+            sampler.run_mcmc(pos, n_total, progress=verbose)
 
         self.sampler = sampler
+        self.coefficients, self.lower_err, self.higher_err = self._coefficients()
+
+    def _coefficients(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        percentiles = np.percentile(self.sampler.flatchain, [16, 50, 84], axis=0)
+        err = np.diff(percentiles, axis=0)
+        return percentiles[1], err[0], err[1]

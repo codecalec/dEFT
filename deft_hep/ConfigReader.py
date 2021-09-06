@@ -1,7 +1,6 @@
 import sys
 import json
 import numpy as np
-from numpy.linalg import inv
 
 
 class ConfigReader:
@@ -94,7 +93,7 @@ class ConfigReader:
                     raise Exception(f"Coefficient {label} does not have 2 values.")
                 if limits[0] >= limits[1]:
                     raise Exception(
-                        f"Prior limit for coefficient {label} are invalid: {limit}"
+                        f"Prior limit for coefficient {label} are invalid: {limits}"
                     )
 
             self.coefficients = list(

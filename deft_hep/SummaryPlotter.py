@@ -83,7 +83,7 @@ class SummaryPlotter:
         xlabel = self.config.observable if "xlabel" not in kwargs else kwargs["xlabel"]
 
         if len(self.config.coefficients) == 1:
-            label_bestfit = f"Best Fit: {self.config.tex_labels[0]}={self.mcmc_params[0]:.3f}$\pm${np.sqrt(self.mcmc_params_cov):.3f}"
+            label_bestfit = f"Best Fit: {self.config.tex_labels[0]}={self.mcmc_params[0]:.3f}$\\pm${np.sqrt(self.mcmc_params_cov):.3f}"
         else:
             label_bestfit = "Best Fit:"
             for c_name, c_value, c_error in zip(
@@ -91,7 +91,7 @@ class SummaryPlotter:
                 self.mcmc_params,
                 np.sqrt(np.diagonal(self.mcmc_params_cov)),
             ):
-                label_bestfit += f" {c_name}={c_value:.3f}$\pm${c_error:.3f}\n"
+                label_bestfit += f" {c_name}={c_value:.3f}$\\pm${c_error:.3f}\n"
 
         data_err = np.sqrt(np.diagonal(self.config.cov))
 
@@ -125,7 +125,7 @@ class SummaryPlotter:
         ax = plt.gca()
         ax.set_xlabel(xlabel, fontsize=18)
         ax.set_ylabel(ylabel, fontsize=18)
-        plt.legend(bbox_to_anchor=(1,1), loc="upper left")
+        plt.legend(bbox_to_anchor=(1, 1), loc="upper left")
         plt.savefig(self.path / filename)
 
         if show_plot:
@@ -149,18 +149,34 @@ class SummaryPlotter:
         #  make corner plot
         ranges = [limit for limit in self.config.prior_limits.values()]
 
-        fig = corner.corner(
-            self.samples,
-            labels=self.config.tex_labels,
-            label_kwargs={"fontsize": 18},
-            # range=ranges, todo: Reimplement
-            quantiles=[0.16, 0.84],
-            # levels=(1 - np.exp(-0.5),), Causes ValueError: Contour levels must be increasing
-            truths=np.zeros(len(self.config.tex_labels)),
-            show_titles=True,
-            title_kwargs={"fontsize": 18},
-            **corner_kwargs,
-        )
+        try:
+            fig = corner.corner(
+                self.samples,
+                labels=self.config.tex_labels,
+                label_kwargs={"fontsize": 18},
+                # range=ranges, todo: Reimplement
+                quantiles=[0.16, 0.84],
+                levels=iter([1 - np.exp(-0.5) for _ in self.mcmc_params]),
+                truths=np.zeros(len(self.config.tex_labels)),
+                show_titles=True,
+                title_kwargs={"fontsize": 18},
+                **corner_kwargs,
+            )
+        except ValueError:
+            print("Warning: levels on 2D histograms may not be 1 sigma")
+            fig = corner.corner(
+                self.samples,
+                labels=self.config.tex_labels,
+                label_kwargs={"fontsize": 18},
+                quantiles=[0.16, 0.84],
+                # levels=iter(
+                # [1 - np.exp(-0.5) for _ in self.mcmc_params]
+                # ),
+                truths=np.zeros(len(self.config.tex_labels)),
+                show_titles=True,
+                title_kwargs={"fontsize": 18},
+                **corner_kwargs,
+            )
 
         ax0 = fig.add_subplot(999)
         ax0.axis("off")

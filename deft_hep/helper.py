@@ -1,11 +1,13 @@
 import re as _re
 from pathlib import Path as _Path
+from typing import Tuple as _Tuple
+
 import numpy as _np
 
 
 def convert_hwu_to_numpy(
     filename: _Path, num_of_hist: int = 1
-) -> (_np.ndarray, _np.ndarray, _np.ndarray):
+) -> _Tuple[_np.ndarray, _np.ndarray, _np.ndarray]:
     """
     Convert a HwU (histogram with uncertainties) file from MadGraph into a JSON file which is compatible with dEFT.
     Only parses the first histogram in the file by default.
@@ -17,7 +19,7 @@ def convert_hwu_to_numpy(
         bin_lefts = _np.empty(0)
         bin_rights = _np.empty(0)
         central_values = _np.empty(0)
-        for i in range(num_of_hist):
+        for _ in range(num_of_hist):
             line = next(hwu_f)
             while (match := _re.search(r"<histogram> (\d+) ", line)) is None:
                 line = next(hwu_f)
@@ -26,7 +28,7 @@ def convert_hwu_to_numpy(
             bins = int(match.group(1))
 
             line = next(hwu_f)
-            for i in range(bins):
+            for _ in range(bins):
                 # The 2-index in HwU are central value of bin
                 values = line.strip().split()
                 central_values = _np.append(central_values, float(values[2]))

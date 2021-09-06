@@ -1,11 +1,13 @@
+import copy
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 from .ConfigReader import ConfigReader
 from .PredictionBuilder import PredictionBuilder
+from .MCMCFitter import MCMCFitter
 
 
 class ModelValidator:
@@ -17,11 +19,11 @@ class ModelValidator:
         self.nOps = pb.nOps
         self.pb = pb
 
-    def validate(self, config_test: ConfigReader) -> (List[float], List[np.ndarray]):
+    def validate(self, config_test: ConfigReader):
         """ Generate predictions for the test samples in the test configuration using the model from the PredictionBuilder """
 
-        test_samples = config_test.params["config"]["model"]["samples"]
-        test_preds = np.asarray(config_test.params["config"]["model"]["predictions"])
+        test_samples = config_test.samples
+        test_preds = config_test.predictions
         assert self.nOps == len(
             config_test.params["config"]["model"]["prior_limits"]
         ), f"Operator mismatch ({self.nOps} : {len(config_test.params['config']['model']['prior_limits'])}). Make sure the supplied ConfigReader has the correct number of operators for the model"
@@ -31,18 +33,40 @@ class ModelValidator:
             "###############  VALIDATION OF MORPHING MODEL  ###############\n"
             "##############################################################\n"
             "\n"
+            f"Validation Run Name: {config_test.run_name}\n"
             f"Number of operators: {self.nOps}\n"
-            f"Number of validation cases: {len(test_samples)}\n"
+            f"Number of validation cases: {len(test_samples)}"
         )
 
+        for prediction, sample in zip(test_preds, test_samples):
+            config = copy.deepcopy(config_test)
+            config.data = prediction
+            fitter = MCMCFitter(config, self.pb, verbose=False)
+            print(f"\nValidation for sample: {sample}")
+            print(f"Index\tStatus\tValue\tLower\tUpper")
+            agreement = (fitter.coefficients - fitter.lower_err < sample[1:]) & (
+                sample[1:] < fitter.coefficients + fitter.higher_err
+            )
+            for i, (coeff, lower, upper, does_agree) in enumerate(
+                zip(fitter.coefficients, fitter.lower_err, fitter.higher_err, agreement)
+            ):
+                print(
+                    "{}\t{}\t{}\t-{}\t+{}".format(
+                        i + 1, "GOOD" if does_agree else "BAD", coeff, lower, upper
+                    )
+                )
+
+    def validation_predictions(
+        self, config_test: ConfigReader
+    ) -> Tuple[np.ndarray, List[np.ndarray]]:
+        test_samples = config_test.samples
+        test_preds = config_test.predictions
+
         # Generate predictions using model
-        model_preds = [None] * len(test_samples)
+        model_preds = [np.array([])] * len(test_samples)
         for i, sample in enumerate(test_samples):
             model_preds[i] = self.pb.make_prediction(sample[1:])
         assert len(model_preds[0]) == len(test_preds[0])
-
-        diff_preds = np.square(model_preds - test_preds).sum(axis=0)
-        print(f"Total Square difference: {diff_preds}")
 
         return test_samples, model_preds
 
@@ -56,7 +80,9 @@ class ModelValidator:
         """ Produces a comparison plots for each test case at a specified filepath or at `./results/{config.run_name}_validation`. The supplied ConfigReader should be related to the validation configuration."""
         run_name = config.run_name
         results_path = (
-            Path("results") / f"{run_name}_validation" if not filepath else filepath
+            Path("results") / f"{run_name}_validation"
+            if not filepath
+            else Path(filepath)
         )
         results_path.mkdir(parents=True, exist_ok=True)
 
